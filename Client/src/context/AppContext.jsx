@@ -4,7 +4,8 @@ import api from "../config/api";
 
 const AppContext = createContext();
 
-const ROOT_BREADCRUMB = {id: null, name: "My Drive"};
+const ROOT_BREADCRUMB = { id: null, name: "My Drive" };
+const ROOT_BREADCRUMBS = [ROOT_BREADCRUMB];
 
 const getErrorMessage = (err, fallback) => err?.response?.data?.error || fallback;
 
@@ -19,7 +20,7 @@ export const AppProvider = ({ children }) => {
 
     //Drive View State
     const [currentFolderId, setCurrentFolderId] = useState(null);
-    const [breadcrumbs, setBreadcrumbs] = useState(ROOT_BREADCRUMB);
+    const [breadcrumbs, setBreadcrumbs] = useState(ROOT_BREADCRUMBS);
     const [folders, setFolders] = useState([]);
     const [files, setFiles] = useState([]);
     const [isDriveLoading, setIsDriveLoading] = useState(false);
@@ -41,11 +42,9 @@ export const AppProvider = ({ children }) => {
     }, [])
 
     //Check Auth Status on App Load
-    useEffect(()=> {
-        refreshUser().finally(()=> setIsLoading(false))
-    }, [refreshUser
-
-    ])
+    useEffect(() => {
+        refreshUser().finally(() => setIsLoading(false))
+    }, [refreshUser])
 
     // Auth Actions Helper
     const authAction = async (requestFn, successMsg, errorFallback) => {
@@ -78,26 +77,24 @@ export const AppProvider = ({ children }) => {
         }
     }
 
-    const fetchDriveContent = useCallback(()=> {
-        async (folderId = currentFolderId, search = searchQuery, sort = sortBy)=>{
-            if(!user) return;
-            setIsDriveLoading(true)
-            try{
-                const parentParam =  folderId || "null";
-                const [folderRes, filesRes, detailsRes] = await Promise.all([
-                    api.get("/api/folders", {params: { parent_id: parentParam }}),
-                    api.get("/api/files", {params: { folder_id: parentParam, search, sort }}),
-                    folderId ? api.get(`/api/folders/${folderId}`) : null,
-                ])
+    const fetchDriveContent = useCallback(async (folderId = currentFolderId, search = searchQuery, sort = sortBy) => {
+        if(!user) return;
+        setIsDriveLoading(true)
+        try{
+            const parentParam = folderId || "null";
+            const [folderRes, filesRes, detailsRes] = await Promise.all([
+                api.get("/api/folders", { params: { parent_id: parentParam } }),
+                api.get("/api/files", { params: { folder_id: parentParam, search, sort } }),
+                folderId ? api.get(`/api/folders/${folderId}`) : null,
+            ])
 
-                setFolders(folderRes.data.folders)
-                setFiles(filesRes.data.files)
-                setBreadcrumbs(detailsRes?.data?.breadcrumbs || ROOT_BREADCRUMB)
-            }catch (error){
-                toast.error("Failed to fetch drive content")
-            }finally{
-                setIsDriveLoading(false)
-            }
+            setFolders(folderRes.data.folders)
+            setFiles(filesRes.data.files)
+            setBreadcrumbs(detailsRes?.data?.breadcrumbs?.length ? detailsRes.data.breadcrumbs : ROOT_BREADCRUMBS)
+        } catch (error) {
+            toast.error("Failed to fetch drive content")
+        } finally {
+            setIsDriveLoading(false)
         }
     }, [user, currentFolderId, searchQuery, sortBy])
 
