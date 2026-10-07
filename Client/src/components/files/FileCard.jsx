@@ -5,7 +5,18 @@ import { format } from 'date-fns'
 
 const FileCard = ({ file, onPreview, onShare, onRename, onMove, onDelete }) => {
   return (
-    <div className='group relative bg-white border border-slate-200 hover:border-orange-200 rounded-2xl p-4 transition-all duration-200 cursor-pointer flex flex-col justify-between'>
+    <div
+      className='group relative bg-white border border-slate-200 hover:border-orange-200 rounded-2xl p-4 transition-all duration-200 cursor-pointer flex flex-col justify-between'
+      role={onPreview ? 'button' : undefined}
+      tabIndex={onPreview ? 0 : undefined}
+      onClick={() => onPreview?.(file)}
+      onKeyDown={(event) => {
+        if (event.target === event.currentTarget && (event.key === 'Enter' || event.key === ' ')) {
+          event.preventDefault()
+          onPreview?.(file)
+        }
+      }}
+    >
       <div className='flex items-start justify-between gap-2 mb-3'>
         <div className='p-2.5 rounded-xl bg-slate-50 border border-slate-100'>
           {getFileIcon(file.mime_type, 'size-6')}

@@ -1,4 +1,3 @@
-import React from 'react'
 import { Toaster } from 'react-hot-toast'
 import { Navigate, Route, Routes } from 'react-router-dom'
 import ProtectedRoute from './components/auth/ProtectedRoute'
@@ -18,7 +17,7 @@ const App = () => {
         
         <Route path="/login" element={<Login mode="login" />} />
         <Route path="/register" element={<Login mode="register" />} />
-        <Route path="/s:token" element={<SharedWithMe />} />
+        <Route path="/s/:token" element={<SharedWithMe />} />
 
         {/* Private Routes */}
         <Route element={<ProtectedRoute />}>
