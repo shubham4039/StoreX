@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { Modal } from '../ui/Modal'
 import { Input } from '../ui/Input'
 import { Button } from '../ui/Button'
@@ -35,6 +35,15 @@ const ShareModal = ({item, isOpen, onClose}) => {
             setIsLoading(false)
         }
     }, [item])
+
+    useEffect(()=> {
+        if(isOpen && item) {
+            setCopied(false)
+            setGeneratedLink("")
+            setShareLinkId(null)
+            getOrCreateShareLink()
+        }
+    }, [isOpen, item, getOrCreateShareLink])
 
     const copyToClipboard = ()=>{
         if(!generatedLink) return;
@@ -107,7 +116,12 @@ const ShareModal = ({item, isOpen, onClose}) => {
                     {/* Delete Share Link Option */}
                     <div className='pt-2 border-t border-slate-100 text-slate-500 flex items-center justify-end gap-2' >
                         <span className='text-xs' >Want to revoke access?</span>
-                        <XIcon onClick={handleDeleteShareLink} className='size-4 hover:text-red-600 cursor-pointer ' />
+                        <button typr="button"
+                            onClick={handleDeleteShareLink}
+                            aria-label='Revoke share link'
+                            className='p-1 hover:text-red-600 ' >
+                            <XIcon className='size-4'/>
+                        </button>
                     </div>
 
                 </div>
