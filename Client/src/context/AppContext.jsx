@@ -99,7 +99,7 @@ export const AppProvider = ({ children }) => {
     }, [user, currentFolderId, searchQuery, sortBy])
 
     const value = { 
-        user, setUser, login, register, logout,
+        user, setUser, login, register, logout, refreshUser,
         isLoading, isAuthenticated: !!user,
         isUploading, setIsUploading, uploadProgress, setUploadProgress,
         currentFolderId, setCurrentFolderId, breadcrumbs, folders, setFolders, files, setFiles, isDriveLoading, fetchDriveContent,
