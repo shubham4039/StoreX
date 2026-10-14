@@ -46,6 +46,7 @@ export const deleteFromStorage = async(key) => {
             await client.send(new DeleteObjectCommand({ Bucket: BUCKET_NAME, Key: key }));
         } catch (fallbackErr) {
             console.error("[Storage Delete Error]:", fallbackErr.message );
+            throw fallbackErr;
         }
     }
 }
