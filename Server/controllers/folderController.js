@@ -108,7 +108,7 @@ export const renameFolder = async (req, res) => {
         AND owner_id = ${req.user.id} AND is_trashed = false RETURNING *`;
 
         if(!folder){
-            return res.status(400).json({ error: "Folder not found." }); 
+            return res.status(404).json({ error: "Folder not found." }); 
         }
 
         return res.status(200).json({ folder });
@@ -155,32 +155,28 @@ export const moveFolder = async (req, res) => {
             newPath = [...targetPath, targetFolder.id]
         }
 
-        // Update moved folder
-        await sql`
+        const updates = [sql`
         UPDATE folders
         SET parent_id = ${targetParent || null}, path = ${newPath}, updated_at = NOW()
-        WHERE id = ${folderId}`;
+        WHERE id = ${folderId} AND owner_id = ${req.user.id}`];
 
         // Update all descendent paths
         const descendents = await sql`
         SELECT id, path FROM folders
         WHERE ${folderId} = ANY(path::text[]) AND owner_id = ${req.user.id}`; 
 
-        if(descendents.length > 0){
-            await Promise.all(
-                descendents.map((desc) => {
-                    const folderIndex = desc.path.findIndex((p) => p === folderId);
-                    const subPath = folderIndex !== -1 ? desc.path.slice(folderIndex + 1) : [];
-                    const updatePath = [...newPath, folderId, ...subPath];
-                    return sql`
-                    UPDATE folders SET path = ${updatePath}, updated_at = NOW()
-                    WHERE id = ${desc.id}`;
-                })
-            )
-        }
+        updates.push(...descendents.map((desc) => {
+            const folderIndex = desc.path.findIndex((p) => p === folderId);
+            const subPath = folderIndex !== -1 ? desc.path.slice(folderIndex + 1) : [];
+            const updatePath = [...newPath, folderId, ...subPath];
+            return sql`
+            UPDATE folders SET path = ${updatePath}, updated_at = NOW()
+            WHERE id = ${desc.id} AND owner_id = ${req.user.id}`;
+        }));
+        await sql.transaction(updates);
 
-        const [updated] = await sql`SELECT * FROM folders WHERE id = ${folderId}`;
-        return res.status(200).json({ folders: updated })
+        const [updated] = await sql`SELECT * FROM folders WHERE id = ${folderId} AND owner_id = ${req.user.id}`;
+        return res.status(200).json({ folder: updated })
     } catch (error) {
         return res.status(500).json({ error: error.message });
     }
