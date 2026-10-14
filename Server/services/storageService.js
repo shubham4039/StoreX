@@ -1,5 +1,5 @@
 import { sql } from "../config/db.js";
-import { deleteMultipleFromStorage } from "../utils/s3Helper.js";
+import { deleteFromStorage ,deleteMultipleFromStorage } from "../utils/s3Helper.js";
 
 // Get all descendent folder IDs for a given folder including the root folder ID itself.
 export const getFolderHierarchyIds = async (folderId, ownerId) => {

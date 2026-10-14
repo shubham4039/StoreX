@@ -90,7 +90,7 @@ export const getFiles = async (req, res) => {
             AND (${isSearch}:: boolean = true AND name ILIKE ${pattern} OR ${isSearch}
             :: boolean = false AND folder_id IS NOT DISTINCT FROM ${targetFolderId})
             ORDER BY ${sql.unsafe (orderBy)}
-            IMIT ${limitNum} OFFSET ${offset}
+            LIMIT ${limitNum} OFFSET ${offset}
             `,
             sql`
             SELECT COUNT(*):: int AS total FROM files
