@@ -134,8 +134,8 @@ export const emptyTrashHierarchy = async (ownerId) => {
     await Promise.all([
         s3Keys.length > 0 ? deleteMultipleFromStorage (s3Keys): Promise.resolve(),
         cleanupShareLinks(trashedFileIds, trashedFolderIds),
-        sql`DELETE FROM files WHRERE owner_id = ${ownerId} AND is_trashed = true`,
-        sql`DELETE FROM folders WHRERE owner_id = ${ownerId} AND is_trashed = true`,
+        sql`DELETE FROM files WHERE owner_id = ${ownerId} AND is_trashed = true`,
+        sql`DELETE FROM folders WHERE owner_id = ${ownerId} AND is_trashed = true`,
     ]);
 
     if(totalFreedBytes > 0){

@@ -1,4 +1,3 @@
-import React from 'react'
 import { useApp } from '../../context/AppContext'
 import { SearchIcon, MenuIcon, ArrowUpDownIcon, UserIcon, LogOutIcon } from 'lucide-react'
 import { Dropdown, DropdownItem } from '../ui/Dropdown'

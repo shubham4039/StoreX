@@ -1,8 +1,6 @@
 import { getSignedFileUrl } from "../utils/s3Helper.js";
 import { sql } from "../config/db.js";
-import { crypto } from "crypto"
-import { url } from "inspector";
-import { permission } from "process";
+import { randomBytes } from "node:crypto"
 
 // Create or retrieve public share link for file or folder
 // POST /api/shares
@@ -37,7 +35,9 @@ export const createShareLink = async (req, res) => {
             // Check for an existing share link for this resource
             const [existing] = await sql`
             SELECT * FROM share_links
-            WHERE resource_id = ${resource.id} AND owner_id = ${existing.id}`;
+            WHERE resource_type = ${resourceType}
+            AND resource_id = ${resource.id}    
+            AND owner_id = ${req.user.id}`;
 
             // If expired, remove it
             if(existing && existing.expires_at && new Date() > new Date(existing.expires_at)){
@@ -46,14 +46,15 @@ export const createShareLink = async (req, res) => {
                 return res.status(200).json({ share_link: existing, is_existing: true });
             }
 
-            const token = crypto.randomBytes(16).toString("hex");
+            const token = randomBytes(16).toString("hex");
             const [shareLink] = await sql`
             INSERT INTO share_links (token, resource_type, resource_id, owner_id, permission, expires_at)
-            VALUES (${token}, ${targetExpiresAt ? new Date(targetExpiresAt): null})
+            VALUES (${token}, ${resourceType}, ${resource.id}, ${req.user.id}, ${permission},
+            ${targetExpiresAt ? new Date(targetExpiresAt): null})
             RETURNING *
             `;
 
-            return res.status(201).jsonjson({ share_link: shareLink, is_existing: false });
+            return res.status(201).json({ share_link: shareLink, is_existing: false });
 
     } catch (error) {
         return res.status(500).json({ error: error.message });
@@ -67,7 +68,7 @@ export const getUserShareLinks = async (req, res) => {
         const activeShareLinks = await sql`
         SELECT sl.*,
             CASE
-                WHEN sl.resource_type = 'file' json_build_object('id', f.id, 'name', f.name, 
+                WHEN sl.resource_type = 'file' THEN json_build_object('id', f.id, 'name', f.name, 
                 'mime_type', f.mime_type, 'size', f.size)
                 WHEN sl.resource_type = 'folder' THEN json_build_object('id', fo.id, 'name', fo.name)
             END as resource
@@ -83,6 +84,7 @@ export const getUserShareLinks = async (req, res) => {
             )
             ORDER BY sl.created_at DESC
             `;
+            return res.status(200).json({ share_links: activeShareLinks })
     } catch (error) {
         return res.status(500).json({ error: error.message });
     }
@@ -140,8 +142,8 @@ export const accessShareLink = async(req, res) => {
         }
         const [subfolders, files] = await Promise.all([
             sql`SELECT id, name, parent_id, created_at FROM folders WHERE parent_id = 
-            ${folder.id} AND is_trashed = false,
-            sql SELECT * FROM files WHERE folder_id = ${folder.id} AND is_trashed = false`,
+            ${folder.id} AND is_trashed = false`,
+            sql`SELECT * FROM files WHERE folder_id = ${folder.id} AND is_trashed = false`,
         ]);
 
         const filesWithUrls = await Promise.all(

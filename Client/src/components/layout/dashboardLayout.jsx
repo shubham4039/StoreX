@@ -1,13 +1,13 @@
-import React from 'react'
+import { useState } from 'react'
 import { Outlet } from 'react-router-dom'
 import Header from './Header'
 import Sidebar from './Sidebar'
 import CreateFolderModal from '../folders/CreateFolderModal'
 
-const dashboardLayout = () => {
+const DashboardLayout = () => {
 
-    const [isMobileOpen, setIsMobileOpen] = React.useState(false)
-    const [isCreateFolderOpen, setIsCreateFolderOpen] = React.useState(false)
+    const [isMobileOpen, setIsMobileOpen] = useState(false)
+    const [isCreateFolderOpen, setIsCreateFolderOpen] = useState(false)
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 flex flex-col" >
@@ -31,4 +31,4 @@ const dashboardLayout = () => {
   )
 }
 
-export default dashboardLayout
+export default DashboardLayout

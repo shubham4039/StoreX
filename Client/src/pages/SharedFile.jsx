@@ -1,5 +1,5 @@
 import { CheckIcon, CopyIcon, ExternalLinkIcon, Trash2Icon, UsersIcon } from 'lucide-react'
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { getFileIcon } from '../assets/assets'
 import { EmptyState } from '../components/ui/EmptyState'
 import { Spinner } from '../components/ui/Spinner'
@@ -17,8 +17,7 @@ const SharedFile = () => {
 	const [isDeleting, setIsDeleting] = useState(false)
 	const [copiedToken, setCopiedToken] = useState(null)
 
-	const fetchShares = async (params) => {
-		setIsLoading(true);
+	const fetchShares = async () => {
 		try {
 			const { data } = await api.get("/api/shares")
 			setShares (data.share_links || [])
@@ -30,7 +29,8 @@ const SharedFile = () => {
 	}
 
 	useEffect(()=> {
-		fetchShares()
+		const timeoutId = window.setTimeout(fetchShares, 0)
+		return () => window.clearTimeout(timeoutId)
 	}, [])
 
 	const handleCopy = (token) =>{

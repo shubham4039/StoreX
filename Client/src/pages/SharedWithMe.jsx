@@ -14,7 +14,6 @@ const SharedWithMe = () => {
   const [data, setData] = useState(null)
 
   useEffect(()=>{
-    setIsLoading(true)
     api.get(`/api/shares/access/${token}`).then((res)=>{
       setData(res.data)
     }).catch((err)=>{
@@ -40,10 +39,10 @@ const SharedWithMe = () => {
       {/* Content Container */}
       <main className="flex-1 flex items-center justify-center p-6">
         {isLoading? (
-          <div className="text-center space-y-3">
+          <div className="flex flex-col items-center gap-3">
             <Spinner size='lg' className="text-orange-600"/>
             <p className="text-sm text-slate-500 font-medium">Loading shared item...</p>
-        </div>
+          </div>
         ): error? (
           <div className='max-w-md w-full p-8 bg-white border border-slate-200
           rounded-2x1 text-center space-y-4'>

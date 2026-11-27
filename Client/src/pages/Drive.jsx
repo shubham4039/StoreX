@@ -49,8 +49,8 @@ const Drive = () => {
 
       {/* Models */}
       {previewFile && <FilePreview file={previewFile} onClose={()=> setPreviewFile(null)}/>}
-      {shareItem && <ShareModal item={shareItem} isOpen={!!shareItem} onClose={()=> setShareItem(null)}/>}
-      {renameItem && <RenameModal item={renameItem} isOpen={!!renameItem} onClose={()=> setRenameItem(null)}/>}
+      {shareItem && <ShareModal key={`${shareItem.item_type}-${shareItem.id}`} item={shareItem} isOpen={!!shareItem} onClose={()=> setShareItem(null)}/>}
+      {renameItem && <RenameModal key={`${renameItem.item_type}-${renameItem.id}`} item={renameItem} isOpen={!!renameItem} onClose={()=> setRenameItem(null)}/>}
       {moveItem && <MoveModal item={moveItem} isOpen={!!moveItem} onClose={()=> setMoveItem(null)}/>}
       
       {deleteItem && (

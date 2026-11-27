@@ -37,12 +37,9 @@ const ShareModal = ({item, isOpen, onClose}) => {
     }, [item])
 
     useEffect(()=> {
-        if(isOpen && item) {
-            setCopied(false)
-            setGeneratedLink("")
-            setShareLinkId(null)
-            getOrCreateShareLink()
-        }
+        if(!isOpen || !item) return
+        const timeoutId = window.setTimeout(getOrCreateShareLink, 0)
+        return () => window.clearTimeout(timeoutId)
     }, [isOpen, item, getOrCreateShareLink])
 
     const copyToClipboard = ()=>{

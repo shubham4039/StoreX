@@ -1,4 +1,5 @@
 import { sql } from "../config/db.js"
+import { emptyTrashHierarchy } from "../services/storageService.js"
 
 // Get all trashed files and folders for user
 // GET /api/trash

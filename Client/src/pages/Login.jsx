@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { MailIcon, LockIcon, UserIcon } from 'lucide-react'
 import { Link, useNavigate } from 'react-router-dom'
 import { Input } from '../components/ui/Input'

@@ -1,17 +1,13 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { useDrive } from '../../hooks/useDrive'
 import { Modal } from '../ui/Modal'
 import { Button } from '../ui/Button'
 import { Input } from '../ui/Input'
 
 const RenameModal = ({ item, isOpen, onClose }) => {
-        const [name, setName] = useState("")
+        const [name, setName] = useState(item?.name || "")
         const [isLoading, setIsLoading] = useState (false)
         const {renameItem} = useDrive()
-
-        useEffect(()=> {
-            if(item) setName(item.name || "")
-        }, [item])
 
         const handleSubmit = async (e) => {
             e.preventDefault();
