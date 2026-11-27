@@ -74,7 +74,7 @@ export const getFiles = async (req, res) => {
     try {
         const {folder, folder_id, search, sort = "name_asc", page = 1, limit = 50} = req.query;
         const pageNum = Math.max(1, parseInt(page, 10) || 1);
-        const limitNum = Math.max(1, parseInt(limit, 10) || 50);
+        const limitNum = Math.min(100, Math.max(1, parseInt(limit, 10) || 50));
         const offset = (pageNum - 1) * limitNum;
         const orderBy = SORT_MAP [sort] || SORT_MAP.name_asc;
         
@@ -88,7 +88,7 @@ export const getFiles = async (req, res) => {
             SELECT * FROM files
             WHERE owner_id = ${req.user.id} AND is_trashed = false
             AND (${isSearch}:: boolean = true AND name ILIKE ${pattern} OR ${isSearch}
-            :: boolean = false AND folder_id IS NOT DISTINCT FROM ${targetFolderId})
+            ::boolean = false AND folder_id IS NOT DISTINCT FROM ${targetFolderId})
             ORDER BY ${sql.unsafe (orderBy)}
             LIMIT ${limitNum} OFFSET ${offset}
             `,
@@ -96,7 +96,7 @@ export const getFiles = async (req, res) => {
             SELECT COUNT(*):: int AS total FROM files
             WHERE owner_id = ${req.user.id} AND is_trashed = false
             AND (${isSearch}:: boolean = true AND name ILIKE ${pattern} OR ${isSearch}
-            :: boolean = false AND folder_id IS NOT DISTINCT FROM ${targetFolderId})
+            ::boolean = false AND folder_id IS NOT DISTINCT FROM ${targetFolderId})
             `,
         ])  
 

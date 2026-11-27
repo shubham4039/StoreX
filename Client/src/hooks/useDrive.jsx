@@ -117,7 +117,7 @@ export function useDrive() {
     const endpoint = isFolder ? 'folders' : 'files'
     const id = item.id || item
     return runAction(
-      api.delete(`/api/${endpoint}/${id}/permanent-delete`),
+      api.delete(`/api/${endpoint}/${id}/permanent`),
       `${isFolder ? 'Folder' : 'File'} permanently deleted.`,
       'Error deleting item.',
       () => refreshUser(),

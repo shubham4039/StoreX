@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 import { createContext, useCallback, useContext, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import api from "../config/api";
@@ -35,15 +36,18 @@ export const AppProvider = ({ children }) => {
             const{data} = await api.get("/api/auth/me");
             setUser(data.user)
             return data.user;
-        } catch (error) {
+        } catch {
             setUser(null)
             return null
+        } finally {
+            setIsLoading(false)
         }
     }, [])
 
     //Check Auth Status on App Load
     useEffect(() => {
-        refreshUser().finally(() => setIsLoading(false))
+        const timeoutId = window.setTimeout(refreshUser, 0)
+        return () => window.clearTimeout(timeoutId)
     }, [refreshUser])
 
     // Auth Actions Helper
@@ -72,7 +76,7 @@ export const AppProvider = ({ children }) => {
             await api.post("/api/auth/logout");
             setUser(null)
             toast.success("Logged out!")
-        } catch(error){
+        } catch {
             toast.error("Logout error")
         }
     }
@@ -91,7 +95,7 @@ export const AppProvider = ({ children }) => {
             setFolders(folderRes.data.folders)
             setFiles(filesRes.data.files)
             setBreadcrumbs(detailsRes?.data?.breadcrumbs?.length ? detailsRes.data.breadcrumbs : ROOT_BREADCRUMBS)
-        } catch (error) {
+        } catch {
             toast.error("Failed to fetch drive content")
         } finally {
             setIsDriveLoading(false)

@@ -12,8 +12,16 @@ import shareRouter from "./routes/shareRoutes.js";
 const app = express()
 
 // CORS configuration 
-const allowedOrigins = process.env.ORIGINS.split(",");
-app.use(cors({origin: allowedOrigins, credentials: true}))
+const allowedOrigins = (
+    process.env.ORIGINS || "http://localhost:5173"
+)
+    .split(",")
+    .map(origin => origin.trim());
+    
+app.use(cors({
+    origin: allowedOrigins,
+    credentials: true
+}));
 
 // Middlewares
 app.use(cookieParser())

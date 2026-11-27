@@ -1,4 +1,3 @@
-import React from 'react'
 import { FolderIcon } from 'lucide-react'
 import { Button } from '../ui/Button'
 import { ItemDropdown } from '../ui/ItemDropdown'

@@ -1,4 +1,3 @@
-import React from 'react'
 import { getFileIcon, formatBytes } from '../../assets/assets'
 import { ItemDropdown } from '../ui/ItemDropdown'
 import { format } from 'date-fns'

@@ -1,4 +1,3 @@
-import React from 'react'
 import { useApp } from '../../context/AppContext'
 import { Navigate, Outlet, useLocation } from 'react-router-dom'
 import { Spinner } from '../ui/Spinner'

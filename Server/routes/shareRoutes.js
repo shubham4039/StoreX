@@ -5,7 +5,7 @@ import { protect } from "../middleware/auth.js";
 const shareRouter = express.Router()
 
 // Public link access (anyone with the link)
-shareRouter.get("/access/: token", accessShareLink)
+shareRouter.get("/access/:token", accessShareLink)
 
 // Protected share management endpoints
 shareRouter.use(protect)

@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { useDrive } from '../../hooks/useDrive'
 import { Modal } from '../ui/Modal'
 import { Input } from '../ui/Input'

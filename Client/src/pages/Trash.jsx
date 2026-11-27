@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { LucideFolder, RotateCcwIcon, Trash2Icon, TrashIcon } from 'lucide-react'
 import { useDrive } from '../hooks/useDrive'
 import { useApp } from '../context/AppContext'
@@ -47,8 +47,7 @@ const Trash = () => {
   const {restoreItem, permanentDeleteItem} = useDrive()
   const { refreshUser } = useApp()
   
-  const fetchTrash = async (params) => {
-    setIsLoading(true);
+  const fetchTrash = async () => {
     try {
       const { data } = await api.get("/api/trash")
       setTrash({files: data.files || [], folders: data.folders || [] })
@@ -60,7 +59,8 @@ const Trash = () => {
   }
 
   useEffect(()=> {
-    fetchTrash()
+    const timeoutId = window.setTimeout(fetchTrash, 0)
+    return () => window.clearTimeout(timeoutId)
   }, [])
 
   const handleAction = async (actionFn, item, isFolder) => {
@@ -82,8 +82,8 @@ const Trash = () => {
       toast.success("Trash emptied.");
       setTrash({files: [], folders: []})
       await refreshUser()
-    } catch {
-      toast.error("Error emptying trash.");
+    } catch (error) {
+      toast.error(error?.response?.data?.error || "Error emptying trash.");
     }finally{
       setIsEmptying(false);
       setShowEmptyConfirm(false);

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import api from '../../config/api'
 import { formatBytes } from '../../assets/assets'
 import { DownloadIcon, FileTextIcon, Loader2Icon, XIcon } from 'lucide-react'
@@ -13,12 +13,12 @@ const FilePreview = ({file, onClose}) => {
         if(!file) return
 
         let isMounted = true;
-        setIsLoading(true);
-        setError(null);
-
         api.get(`/api/files/${file.id}/preview`)
         .then(({data})=>{
-            if(isMounted) setPreviewUrl(data.url);
+            if(isMounted) {
+                setPreviewUrl(data.url);
+                setError(null);
+            }
         })
         .catch((err)=> {
             if(isMounted) {
